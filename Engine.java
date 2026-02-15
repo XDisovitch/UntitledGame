@@ -17,6 +17,11 @@ public class Engine {
     }
 
     public void update(float deltaTime) {
+        synchronized (objects) {
+            for (GameObject obj : objects) {
+                obj.update();
+            }
+        }
     }
 
     public void draw(Graphics g) {
