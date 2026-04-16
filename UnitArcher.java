@@ -11,24 +11,28 @@ public class UnitArcher extends GameObject {
 
     private GameObject currentTarget;
 
+    // Добавляем переменную для отслеживания времени следующей доступной атаки
+    private float nextAttackTime = 0f;
+
     // настройки лучника
     private static final float ARCHER_SPEED = 5f;
     private static final float ARCHER_ATTACK_RANGE = 300f;
-    private static final float ARCHER_ATTACK_COOLDOWN = 1.5f;
+    private static final float ARCHER_ATTACK_COOLDOWN = 1.5f;  // 1.5 секунды перезарядки
     private static final float ARROW_SPEED = 600f;
 
     public UnitArcher() {
-        this.fraction = 2;  // <--- ДОБАВИТЬ ЭТУ СТРОЧКУ
+        this.fraction = 2;
     }
 
     public UnitArcher(int id, float x, float y, int size, float speed) {
         super(id, x, y, size, ARCHER_SPEED, new Color(70, 130, 180));
         attackRange = ARCHER_ATTACK_RANGE;
         attackCooldown = ARCHER_ATTACK_COOLDOWN;
-        lastAttackTime = -5f;
+        lastAttackTime = -5f;  // Ставим большое отрицательное значение, чтобы можно было сразу стрелять
         attackDamage = 25;
         health = 100;
-        fraction = 2;  // <--- ЭТА СТРОЧКА УЖЕ БЫЛА ИЗМЕНЕНА
+        fraction = 2;
+        nextAttackTime = 0f;  // Инициализируем
     }
 
     @Override
@@ -48,9 +52,10 @@ public class UnitArcher extends GameObject {
                 moveTowards(currentTarget, deltaTime);
             } else {
                 // атака в радиусе поражения
-                if (canAttack(engine.getGameTime())) {
+                float currentTime = engine.getGameTime();
+                if (currentTime >= nextAttackTime) {
                     shootAt(currentTarget);
-                    lastAttackTime = engine.getGameTime();
+                    nextAttackTime = currentTime + ARCHER_ATTACK_COOLDOWN;  // Устанавливаем время следующей атаки
                 }
             }
         }
